@@ -37,26 +37,52 @@ const ls = {
         tempTime += amount * coefficient
         return tempTime
     },
-    getStartTime(type) {
-        const { Y, M, D } = this.getTimePart()
+    getStartTime(type: string, d?: any) {
+        const { Y, M, D, w1 } = ls.getTimePart(d)
         let tempTime = 0
         switch (type) {
             case 'Y':
-                break;
+                tempTime = new Date(`${Y}-${1}-1 00:00:00`).getTime()
+                break
             case 'M':
                 tempTime = new Date(`${Y}-${M}-1 00:00:00`).getTime()
-                break;
+                break
             case 'D':
                 tempTime = new Date(`${Y}-${M}-${D} 00:00:00`).getTime()
-                break;
-        }
+                break
+            case 'W':
+                const s = w1 === 0 ? 6 : w1 - 1
+                tempTime = new Date(`${Y}-${M}-${D} 00:00:00`).getTime() - s * 24 * 60 * 60 * 1000
 
+                break
+        }
+        console.log('xxx:', ls.getTimePart(tempTime))
         return tempTime
     },
-    getTimePart(d) {
+    getEndTime(type: string, d?: any) {
+        const { Y, M, D, w1 } = ls.getTimePart(d)
+        let tempTime = 0
+        switch (type) {
+            case 'Y':
+                tempTime = new Date(`${Y}-12-31 23:59:59`).getTime()
+                break
+            case 'M':
+                tempTime = new Date(`${Y}-${M + 1}-01 23:59:59`).getTime() - 24 * 60 * 60 * 1000
+                break
+            case 'D':
+                tempTime = new Date(`${Y}-${M}-${D} 23:59:59`).getTime()
+                break
+            case 'W':
+                const s = w1 === 0 ? 0 : (7 - w1)
+                tempTime = new Date(`${Y}-${M}-${D} 00:00:00`).getTime() + s * 24 * 60 * 60 * 1000
+                break
+        }
+        console.log('xxx:', ls.getTimePart(tempTime))
+        return tempTime
+    },
+    getTimePart(d: any) {
         const temp = d ? new Date(d) : new Date()
-        console.log(temp)
-        const h = temp.getHours(), m = temp.getMinutes(), s = temp.getSeconds()
+        const h = temp.getHours(), m = temp.getMinutes(), s = temp.getSeconds(), w1 = temp.getDay()
         return {
             Y: temp.getFullYear(),
             M: temp.getMonth() + 1,
@@ -66,53 +92,27 @@ const ls = {
             ss: s > 9 ? s : `0${s}`,
             h,
             m,
-            s
+            s,
+            w1
         }
     },
     formatTime(d, formatter) {
-        const { Y, M, D, HH, mm, } = this.getTimePart(d)
-        console.log(Y, M, D, HH, mm, )
+        const { Y, M, D, HH, mm, } = ls.getTimePart(d)
         let temp = null
         switch (formatter) {
             case 'YYYY-mm-dd HH:mm':
                 temp = `${Y}-${M}-${D} ${HH}:${mm}`
                 break
+            case 'YYYY-mm-dd':
+                temp = `${Y}-${M}-${D}`
+                break
+            case 'YYYY.mm.dd':
+                temp = `${Y}.${M}.${D}`
+                break
+
         }
         return temp
     }
-
-    // setCookie(name, value, iDay) {
-    //     if (this.isInWx) {
-    //         wx.setStorageSync('cookie', value)
-    //     } else {
-    //         // document.cookie = `${name}=${value};expires=${iDay}`
-    //     }
-    // },
-    //     setCookie((name, value, iDay) {  //传值为名，值，过期时间
-    //         if(iDay){ //如果有过期时间的话则执行这个条件
-    //             var oDate = new Date(); //获取当且的事件戳
-    //             oDate.setDate(oDate.getDate() + iDay); //设置过期事件
-    //             document.cookie = name + "=" + value + "; path=/; expires=" + oDate;//设置cookie
-    //         }else {//如果有过期时间的话则执行这个条件 设置cookie
-    //     document.cookie = name + "=" + value + "; path=/"; //名，值以及根目录
-    // }
-    //     },
-    // getCookie(name) {
-    //     if (isInWx) {
-    //         return wx.getStorageSync('cookie')
-    //     } else {
-    //         let val = ''
-    //         document.cookie.split(';').find(item => {
-    //             const temp = item.split('=')
-    //             if (temp[0] === name) val = temp[1]
-    //         })
-    //         console.log(val)
-    //         return val
-    //     }
-    // },
-    // removeCookie(name) {
-    //     this.setCookie(name, '', -1)
-    // }
 }
 
 export {

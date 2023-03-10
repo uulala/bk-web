@@ -106,7 +106,10 @@ let categorys: {
     currentDate: ref(new Date().getTime()),
   }),
   categoryTypeList = reactive([
-    { value: 2, lable: '收入' }, { value: 3, lable: '支出' }, { value: 1, lable: '转账' }, { value: 0, lable: '借贷' }
+    { value: 2, lable: '收入' },
+    { value: 3, lable: '支出' },
+    // { value: 1, lable: '转账' },
+    // { value: 0, lable: '借贷' }
   ]),
   numberArr = reactive([1, 2, 3, 4, 5, 6, 7, 8, 9, '.', 0, '00'])
 
@@ -239,7 +242,7 @@ function handleSave() {
 }
 
 .active {
-  color: aqua
+  color: #409eff;
 }
 
 .bottom-box {

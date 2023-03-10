@@ -236,7 +236,8 @@ function handleAdd() {
 }
 
 .add-icon {
-  border: 1px solid #333;
+  border: 1px solid #409eff;
+  background: #8dc6ff;
   border-radius: 50%;
   font-size: 26px;
   height: 10vw;
