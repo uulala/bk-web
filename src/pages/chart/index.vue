@@ -16,15 +16,15 @@
         <van-calendar
             :show="show"
             type="range"
-            color="#409eff"
+            color="#3cc51f"
             @close="onClose"
             @confirm="onConfirm"
         />
         <view class="time-row">时间范围：{{ showDate }}</view>
-        <view class="box count-box">
-            <view class="count-item box in-item"> 收入：{{ countObj.inNumber }}</view>
-            <view class="count-item box out-item"> 支出：{{ countObj.outNumber }}</view>
-            <view class="count-item box"> 结余：{{ countObj.inNumber - countObj.outNumber }}</view>
+        <view>
+            <view class="count-item  in-item"> 收入：{{ countObj.inNumber }}</view>
+            <view class="count-item  out-item"> 支出：{{ countObj.outNumber }}</view>
+            <view class="count-item "> 结余：{{ countObj.inNumber - countObj.outNumber }}</view>
         </view>
     </view>
 </template>
@@ -128,7 +128,7 @@ function onConfirm(event) {
 }
 
 .active {
-    color: #409eff;
+    color: #3cc51f;
     background: #fff;
 }
 
@@ -137,16 +137,14 @@ function onConfirm(event) {
     padding: 5px;
 }
 
-.count-box {
-    justify-content: space-between;
-}
-
 .count-item {
-    width: 33.33%;
-    height: 50vh;
+    height: 10vh;
     font-size: 16px;
     font-weight: 500;
     background: #a6e4ff;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
 }
 
 .in-item {

@@ -242,7 +242,7 @@ function handleSave() {
 }
 
 .active {
-  color: #409eff;
+  color: #3cc51f;
 }
 
 .bottom-box {

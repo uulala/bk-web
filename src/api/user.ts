@@ -45,4 +45,18 @@ export function wxLogin(cb) {
 }
 
 
+export function updateUser(data: Object) {
+    return http({
+        url: '/signin/update',
+        method: 'post',
+        data
+    })
+}
 
+export function delUser(data: Object) {
+    return http({
+        url: '/signin/del',
+        method: 'post',
+        data
+    })
+}

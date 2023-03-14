@@ -6,7 +6,8 @@ import { ls } from '@/plugin/utils'
 const http = axios
 
 // 请求base路径
-http.defaults.baseURL = "http://127.0.0.1/"
+http.defaults.baseURL = "http://bk.uulala.top/"
+// http.defaults.baseURL = "http://127.0.0.1/"
 
 http.defaults.headers = {
     'content-Type': 'application/json'
@@ -34,12 +35,10 @@ http.interceptors.response.use(
     function (response) {
         // 请求成功后做些什么
         const { config, headers } = response
-        console.log(config.url)
-        if (['/signin', '/signup','/signin/wx'].includes(config.url)) {
+        if (['/signin', '/signup', '/signin/wx'].includes(config.url)) {
             if (ls.isInWx) {
                 wx.setStorageSync('cookie', headers['Set-Cookie'])
             }
-
         } else if (config.url === 'signout') {
             if (ls.isInWx) {
                 wx.setStorageSync('cookie', null)
@@ -50,6 +49,11 @@ http.interceptors.response.use(
     },
     function (error) {
         // 处理响应错误
+        if (error.response.status === 401) {
+            uni.navigateTo({
+                url: '/pages/init/index'
+            })
+        }
         return Promise.reject(error);
     }
 );

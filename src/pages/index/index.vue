@@ -27,8 +27,14 @@
           {{ item.amount }}
         </view>
       </view>
+
       <uni-load-more
         :status="loadStatus"
+        :contentText="{
+          contentdown: '点击查看更多',
+          contentrefresh: '正在加载...',
+          contentnomore: '没有更多数据了'
+        }"
         @clickLoadMore="getFlowData(1)"
       ></uni-load-more>
     </view>
@@ -56,7 +62,6 @@ export default defineComponent({
 import { ref, reactive, onMounted } from 'vue'
 import { iconMap } from '@/static/commonMap'
 import MoveableButton from '@/components/MoveableButton.vue'
-import { wxLogin, signIn, signUp, signOut } from '@/api/user'
 import { getflows, getflowTotal } from '@/api/flow'
 import { getBookList, createBook, getCategoryList } from '@/api/book'
 import { ls } from '@/plugin/utils'
@@ -80,14 +85,32 @@ let countObj = reactive({ inNumber: 0, outNumber: 0 }),
 let loadStatus = ref('more')
 
 onMounted(() => {
-  // signIn({ name: 'test', password: 'password' }).then(res => {
-  //     console.log(res)
-  // })
+  // 默认有bookId, 则有其他相关的book数据
+  if (ls.get('bookId')) {
+    getFlowData()
+  } else {
+    getBookData()
+  }
+})
 
-  signOut().then(res => { })
-  wxLogin((result) => {
-    if (result.msg === '注册成功') {
-      // 默认创建一个日常账本
+// 获取用户账本
+function getBookData() {
+  getBookList({}).then(res => {
+    const data = res.data
+    if (data[0]) {
+      // 已经有账本
+      const bkId = data[0].uuid
+      const currentBook = data[0]
+      ls.set('bookId', bkId)
+      ls.set('currentBook', currentBook)
+      ls.set('allBook', data)
+
+      getCategoryList(currentBook.categorys.join(',')).then(res => {
+        ls.set('categorys', res.data)
+        getFlowData()
+      })
+    } else {
+      // 没有账本，默认创建一个日常账本
       getBookList({ isPublic: 1 }).then(res => {
         const data = res.data
         createBook({ publicBkUuid: data[0].uuid, name: '日常账本', img: 'https://up.enterdesk.com/edpic_source/b9/b7/be/b9b7bed24c1a05f4d197508204d0d043.jpg' }).then(res => {
@@ -96,36 +119,11 @@ onMounted(() => {
           }
         })
       })
-    } else {
-      // 登录成功
-      // 默认有bookId, 则有其他相关的book数据
-      if (ls.get('bookId')) {
-        getFlowData()
-      } else {
-        getBookData()
-      }
     }
-  })
-})
-
-// 获取用户账本
-function getBookData() {
-  getBookList({}).then(res => {
-    const data = res.data
-    const bkId = data[0].uuid
-    const currentBook = data[0]
-    ls.set('bookId', bkId)
-    ls.set('currentBook', currentBook)
-    ls.set('allBook', data)
-
-    getCategoryList(currentBook.categorys.join(',')).then(res => {
-      ls.set('categorys', res.data)
-      getFlowData()
-    })
   })
 }
 
-function getFlowData(flag) {
+function getFlowData(flag?: Boolean) {
 
   getflowTotal({
     bookId: ls.get('bookId'),
@@ -236,8 +234,9 @@ function handleAdd() {
 }
 
 .add-icon {
-  border: 1px solid #409eff;
-  background: #8dc6ff;
+  border: 1px solid #3cc51f;
+  background: #3cc51f;
+  color: #fff;
   border-radius: 50%;
   font-size: 26px;
   height: 10vw;

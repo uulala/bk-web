@@ -10,25 +10,31 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "uni-app"
+				"navigationBarTitleText": "超级梦想任务"
 			}
 		},
 		{
 			"path": "pages/chart/index",
 			"style": {
-				"navigationBarTitleText": "uni-app"
+				"navigationBarTitleText": "超级梦想任务"
 			}
 		},
 		{
 			"path": "pages/mine/index",
 			"style": {
-				"navigationBarTitleText": "uni-app"
+				"navigationBarTitleText": "超级梦想任务"
 			}
 		},
 		{
 			"path": "pages/addflow/index",
 			"style": {
-				"navigationBarTitleText": "uni-app"
+				"navigationBarTitleText": "超级梦想任务"
+			}
+		},
+		{
+			"path": "pages/init/index",
+			"style": {
+				"navigationBarTitleText": "超级梦想任务"
 			}
 		}
 	],
@@ -60,7 +66,7 @@
 	},
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "uni-app",
+		"navigationBarTitleText": "超级梦想任务",
 		"navigationBarBackgroundColor": "#F8F8F8",
 		"backgroundColor": "#F8F8F8",
 		"usingComponents": {
