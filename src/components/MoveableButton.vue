@@ -8,7 +8,7 @@
     </view>
 </template>
 <script lang="ts" setup>
-import { ref, defineProps } from 'vue'
+import { ref } from 'vue'
 
 let top = ref('80vh'), left = ref('80vw')
 const props = defineProps({

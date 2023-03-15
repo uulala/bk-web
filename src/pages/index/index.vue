@@ -59,11 +59,13 @@ export default defineComponent({
 )
 </script>
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onBeforeMount } from 'vue'
 import { iconMap } from '@/static/commonMap'
 import MoveableButton from '@/components/MoveableButton.vue'
 import { getflows, getflowTotal } from '@/api/flow'
 import { getBookList, createBook, getCategoryList } from '@/api/book'
+import { wxLogin, signIn, signUp, signOut, delUser } from '@/api/user'
+
 import { ls } from '@/plugin/utils'
 
 interface flowItem {
@@ -84,13 +86,18 @@ let countObj = reactive({ inNumber: 0, outNumber: 0 }),
 
 let loadStatus = ref('more')
 
-onMounted(() => {
-  // 默认有bookId, 则有其他相关的book数据
-  if (ls.get('bookId')) {
-    getFlowData()
-  } else {
-    getBookData()
-  }
+onBeforeMount(() => {
+  wxLogin((result) => {
+    if (result.code === 1) {
+      ls.set('userinfo', result.data)
+      // 默认有bookId, 则有其他相关的book数据
+      if (ls.get('bookId')) {
+        getFlowData()
+      } else {
+        getBookData()
+      }
+    }
+  })
 })
 
 // 获取用户账本

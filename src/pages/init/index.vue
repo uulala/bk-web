@@ -13,7 +13,14 @@ import { ls } from '@/plugin/utils'
 import { wxLogin, signIn, signUp, signOut, delUser } from '@/api/user'
 
 wxLogin((result) => {
-    uni.navigateBack()
+    if (result.code === 1) {
+        ls.set('userinfo', result.data)
+        // uni.redirectTo({ url: '/pages/index/index' })
+
+        uni.switchTab({
+            url: '/pages/index/index'
+        })
+    }
 })
 
 

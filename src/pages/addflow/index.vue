@@ -1,5 +1,6 @@
 <template>
   <view class="layout">
+    <van-toast id="van-toast" />
     <!-- 大类 -->
     <view class="tab-box box">
       <view
@@ -91,7 +92,7 @@ import { ref, reactive, onMounted, computed } from 'vue'
 import { getCategoryList } from '@/api/book'
 import { createFlow } from '@/api/flow'
 import { ls } from '@/plugin/utils'
-
+import Toast from '@/wxcomponents/vant-weapp/toast/toast';
 let categorys: {
   data: Array<{}>
 } = reactive({ data: [] }),
@@ -99,11 +100,12 @@ let categorys: {
     categoryType: number,
     uuid?: number,
     currentDate: number,
-    amount?: String,
+    amount?: string,
     comment?: string
   } = reactive({
     categoryType: 2,
     currentDate: ref(new Date().getTime()),
+    amount: '',
   }),
   categoryTypeList = reactive([
     { value: 2, lable: '收入' },
@@ -149,7 +151,7 @@ function handleChangeDate(e) {
 }
 
 function handleChangeNumber(num) {
-  formData.amount += num
+  formData.amount = `${formData.amount}${num}`
 }
 function handleDelNum() {
   formData.amount = ''
@@ -172,7 +174,13 @@ function handleSave() {
   ls.set('formData', formData)
   const { categoryType, uuid: categoryId, currentDate, comment, amount } = formData
   const params = { bookId: bookId.value, categoryType, categoryId, bizTime: new Date(currentDate).getTime(), amount: parseFloat(amount), comment: comment }
-  console.log(params)
+
+  if (!amount) {
+    return Toast('请输入金额')
+  }
+  if (!categoryId) {
+    return Toast('请选择类别')
+  }
 
   createFlow(params).then(res => {
     console.log(res.data)

@@ -75,7 +75,6 @@
 			"van-image": "/wxcomponents/vant-weapp/image/index",
 			"van-count-down": "/wxcomponents/vant-weapp/count-down/index",
 			"van-icon": "/wxcomponents/vant-weapp/icon/index",
-			"van-action-sheet": "/wxcomponents/vant-weapp/action-sheet/index",
 			"van-area": "/wxcomponents/vant-weapp/area/index",
 			"van-picker": "/wxcomponents/vant-weapp/picker/index",
 			"van-tab": "/wxcomponents/vant-weapp/tab/index",
@@ -91,7 +90,8 @@
 			"van-slider": "/wxcomponents/vant-weapp/slider/index",
 			"van-field": "/wxcomponents/vant-weapp/field/index",
 			"van-cell": "/wxcomponents/vant-weapp/cell/index",
-			"van-calendar": "/wxcomponents/vant-weapp/calendar/index"
+			"van-calendar": "/wxcomponents/vant-weapp/calendar/index",
+			"van-toast": "/wxcomponents/vant-weapp/toast/index"
 		}
 	}
 }
