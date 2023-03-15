@@ -5,7 +5,16 @@
       <view>支出：{{ countObj.outNumber }}</view>
       <view>结余：{{ countObj.inNumber - countObj.outNumber }}</view>
     </view>
-    <view class="my-list">
+    <van-loading
+      type="spinner"
+      color="#1989fa"
+      v-if="loaded"
+    >数据初始化中...</van-loading>
+
+    <view
+      class="my-list"
+      v-else
+    >
       <view
         class="list-item"
         v-for="item in flows.data"
@@ -36,6 +45,7 @@
           contentnomore: '没有更多数据了'
         }"
         @clickLoadMore="getFlowData(1)"
+        v-if="flows.data.length > 9"
       ></uni-load-more>
     </view>
     <MoveableButton halfWidth="20">
@@ -44,29 +54,18 @@
         class="add-icon"
       >+</view>
     </MoveableButton>
-    <!-- -->
   </view>
 </template>
 <script lang='ts'>
-import { defineComponent } from 'vue'
-export default defineComponent({
-  methods: {
-    reload() {
-      console.log('reload')
-    }
-  }
-}
-)
-</script>
-<script setup lang="ts">
-import { ref, reactive, onBeforeMount } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { iconMap } from '@/static/commonMap'
 import MoveableButton from '@/components/MoveableButton.vue'
 import { getflows, getflowTotal } from '@/api/flow'
 import { getBookList, createBook, getCategoryList } from '@/api/book'
-import { wxLogin, signIn, signUp, signOut, delUser } from '@/api/user'
 
 import { ls } from '@/plugin/utils'
+
+import { defineComponent } from 'vue'
 
 interface flowItem {
   uid: Number
@@ -80,115 +79,142 @@ interface flowItem {
   comment: String // 备注
 }
 
-let countObj = reactive({ inNumber: 0, outNumber: 0 }),
-  page = reactive({ currentPage: 1, pageSize: 10 }),
-  flows: { data: flowItem[] } = reactive({ data: [] })
+export default defineComponent({
+  components: { MoveableButton },
+  methods: {
+    reloadData() {
+      this.getBookData()
+    },
+    reloadFlowData() {
+      this.getFlowData()
+    },
+  },
+  onShow() {
+    console.log('on show ..')
+  },
+  setup() {
+    let countObj = reactive({ inNumber: 0, outNumber: 0 }),
+      page = reactive({ currentPage: 1, pageSize: 10 }),
+      flows: { data: flowItem[] } = reactive({ data: [] })
 
-let loadStatus = ref('more')
+    let loadStatus = ref('more'),
+      loaded = ref(true)
 
-onBeforeMount(() => {
-  wxLogin((result) => {
-    if (result.code === 1) {
-      ls.set('userinfo', result.data)
+    onMounted(() => {
       // 默认有bookId, 则有其他相关的book数据
       if (ls.get('bookId')) {
         getFlowData()
       } else {
         getBookData()
       }
-    }
-  })
-})
+    })
 
-// 获取用户账本
-function getBookData() {
-  getBookList({}).then(res => {
-    const data = res.data
-    if (data[0]) {
-      // 已经有账本
-      const bkId = data[0].uuid
-      const currentBook = data[0]
-      ls.set('bookId', bkId)
-      ls.set('currentBook', currentBook)
-      ls.set('allBook', data)
-
-      getCategoryList(currentBook.categorys.join(',')).then(res => {
-        ls.set('categorys', res.data)
-        getFlowData()
-      })
-    } else {
-      // 没有账本，默认创建一个日常账本
-      getBookList({ isPublic: 1 }).then(res => {
+    // 获取用户账本
+    function getBookData() {
+      getBookList({}).then(res => {
         const data = res.data
-        createBook({ publicBkUuid: data[0].uuid, name: '日常账本', img: 'https://up.enterdesk.com/edpic_source/b9/b7/be/b9b7bed24c1a05f4d197508204d0d043.jpg' }).then(res => {
-          if (res.code === 1) {
-            getBookData()
+        if (data[0]) {
+          // 已经有账本
+          const bkId = data[0].uuid
+          const currentBook = data[0]
+          ls.set('bookId', bkId)
+          ls.set('currentBook', currentBook)
+          ls.set('allBook', data)
+
+          getCategoryList(currentBook.categorys.join(',')).then(res => {
+            ls.set('categorys', res.data)
+            getFlowData()
+          })
+        } else {
+          // 没有账本，默认创建一个日常账本
+          getBookList({ isPublic: 1 }).then(res => {
+            const data = res.data
+            createBook({ publicBkUuid: data[0].uuid, name: '日常账本', img: 'https://up.enterdesk.com/edpic_source/b9/b7/be/b9b7bed24c1a05f4d197508204d0d043.jpg' }).then(res => {
+              if (res.code === 1) {
+                getBookData()
+              }
+            })
+          })
+        }
+      })
+    }
+
+    function getFlowData(flag?: Boolean) {
+      console.log('getFlowData')
+      loaded.value = false
+
+      getflowTotal({
+        bookId: ls.get('bookId'),
+        startTime: ls.getStartTime('M'),
+        endTime: ls.getTime()
+      }).then(res => {
+        console.log(res)
+        res.data.map(item => {
+          if (item._id === 3) {
+            countObj.outNumber = item.totalAmount
+          } else if (item._id === 2) {
+            countObj.inNumber = item.totalAmount
           }
         })
-      })
-    }
-  })
-}
 
-function getFlowData(flag?: Boolean) {
-
-  getflowTotal({
-    bookId: ls.get('bookId'),
-    startTime: ls.getStartTime('M'),
-    endTime: ls.getTime()
-  }).then(res => {
-    console.log(res)
-    res.data.map(item => {
-      if (item._id === 3) {
-        countObj.outNumber = item.totalAmount
-      } else if (item._id === 2) {
-        countObj.inNumber = item.totalAmount
-      }
-    })
-
-  })
-  if (flag) {
-    page.currentPage += 1
-  }
-  loadStatus.value = 'loading'
-  // 分页查询
-  getflows(Object.assign(
-    {
-      bookId: ls.get('bookId'),
-    },
-    page)).then(function (res) {
-
-      const flowsData = res.data
-      const categorys = ls.get('categorys')
-      flowsData.map(item => {
-        item.showTime = ls.formatTime(parseInt(item.bizTime), 'YYYY-mm-dd HH:mm')
-        item.categoryName = categorys.find(it => it.uuid === item.categoryId).name
       })
       if (flag) {
-        if (flowsData.length === 0) {
-          loadStatus.value = 'noMore'
-        } else {
-          loadStatus.value = 'more'
-          flows.data = [...flows.data, ...flowsData]
-        }
-      } else {
-        flows.data = flowsData
-        loadStatus.value = 'more'
+        page.currentPage += 1
       }
-    })
-}
+      loadStatus.value = 'loading'
+      // 分页查询
+      getflows(Object.assign(
+        {
+          bookId: ls.get('bookId'),
+        },
+        page)).then(function (res) {
 
-function handleAdd() {
-  uni.navigateTo({
-    url: '/pages/addflow/index',
-    events: {
-      refreshData(data) {
-        console.log(data)
-      }
-    },
-  })
+          const flowsData = res.data
+          const categorys = ls.get('categorys')
+          flowsData.map(item => {
+            item.showTime = ls.formatTime(parseInt(item.bizTime), 'YYYY-mm-dd HH:mm')
+            item.categoryName = categorys.find(it => it.uuid === item.categoryId).name
+          })
+          if (flag) {
+            if (flowsData.length === 0) {
+              loadStatus.value = 'noMore'
+            } else {
+              loadStatus.value = 'more'
+              flows.data = [...flows.data, ...flowsData]
+            }
+          } else {
+            flows.data = flowsData
+            loadStatus.value = 'more'
+          }
+        })
+    }
+
+    function handleAdd() {
+      uni.navigateTo({
+        url: '/pages/addflow/index',
+        events: {
+          refreshData(data) {
+            console.log(data)
+          }
+        },
+      })
+    }
+
+    return {
+      countObj,
+      page,
+      flows,
+      loadStatus,
+      loaded,
+      getBookData,
+      getFlowData,
+      handleAdd,
+    }
+  }
 }
+)
 </script>
+
 
 <style lang="scss" scoped>
 .content {

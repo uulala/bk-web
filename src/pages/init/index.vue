@@ -1,9 +1,9 @@
 <template>
-    <view>
+    <view class="layout">
         <van-loading
             type="spinner"
             color="#1989fa"
-        />
+        >数据初始化中...</van-loading>
     </view>
 </template>
 
@@ -15,10 +15,13 @@ import { wxLogin, signIn, signUp, signOut, delUser } from '@/api/user'
 wxLogin((result) => {
     if (result.code === 1) {
         ls.set('userinfo', result.data)
-        // uni.redirectTo({ url: '/pages/index/index' })
 
         uni.switchTab({
-            url: '/pages/index/index'
+            url: '/pages/index/index',
+            success(res) {
+                let pages = getCurrentPages()
+                pages[0].$vm.reloadData()
+            }
         })
     }
 })
@@ -26,4 +29,10 @@ wxLogin((result) => {
 
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.layout {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+</style>

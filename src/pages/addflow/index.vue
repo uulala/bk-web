@@ -188,7 +188,7 @@ function handleSave() {
       delta: 1,
       success(res) {
         let pages = getCurrentPages()
-        pages[0].$vm.reload()
+        pages[0].$vm.reloadFlowData()
       }
     })
   })
