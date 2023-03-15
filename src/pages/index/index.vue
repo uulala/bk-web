@@ -44,7 +44,7 @@
           contentrefresh: '正在加载...',
           contentnomore: '没有更多数据了'
         }"
-        @clickLoadMore="getFlowData(1)"
+        @clickLoadMore="getMoreData"
         v-if="flows.data.length > 9"
       ></uni-load-more>
     </view>
@@ -83,9 +83,11 @@ export default defineComponent({
   components: { MoveableButton },
   methods: {
     reloadData() {
+      this.page.currentPage = 1
       this.getBookData()
     },
     reloadFlowData() {
+      this.page.currentPage = 1
       this.getFlowData()
     },
   },
@@ -139,7 +141,7 @@ export default defineComponent({
       })
     }
 
-    function getFlowData(flag?: Boolean) {
+    function getFlowData(isMore?: boolean) {
       console.log('getFlowData')
       loaded.value = false
 
@@ -158,9 +160,7 @@ export default defineComponent({
         })
 
       })
-      if (flag) {
-        page.currentPage += 1
-      }
+
       loadStatus.value = 'loading'
       // 分页查询
       getflows(Object.assign(
@@ -175,7 +175,7 @@ export default defineComponent({
             item.showTime = ls.formatTime(parseInt(item.bizTime), 'YYYY-mm-dd HH:mm')
             item.categoryName = categorys.find(it => it.uuid === item.categoryId).name
           })
-          if (flag) {
+          if (isMore) {
             if (flowsData.length === 0) {
               loadStatus.value = 'noMore'
             } else {
@@ -200,6 +200,11 @@ export default defineComponent({
       })
     }
 
+    function getMoreData() {
+      page.currentPage += 1
+      getFlowData(true)
+    }
+
     return {
       countObj,
       page,
@@ -209,6 +214,7 @@ export default defineComponent({
       getBookData,
       getFlowData,
       handleAdd,
+      getMoreData
     }
   }
 }
