@@ -25,6 +25,7 @@ function handleTouch(ev) {
 <style lang="scss">
 .moveable-button {
     position: absolute;
+    z-index: 100;
 }
 </style>
 

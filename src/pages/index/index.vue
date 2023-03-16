@@ -241,6 +241,7 @@ export default defineComponent({
 
 .modal {
   position: absolute;
+  z-index: 10000;
   width: 100vw;
   height: 100vh;
 
