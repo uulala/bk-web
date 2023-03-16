@@ -140,6 +140,8 @@ const showDate = computed(() => {
 })
 function handleChangeType(item) {
   formData.categoryType = item.value
+  formData.uuid = undefined
+  formData.name = ''
 }
 
 function handleChangeCategory(item) {
