@@ -1,17 +1,17 @@
 <template>
-  <layout pageName='index' >
-      <view
-        class="modal"
-        v-if="loaded"
-      >
-        <!-- 数据初始化中... -->
-        <van-loading
-          type="spinner"
-          color="#1989fa"
-        >数据初始化中...</van-loading>
-      </view>
-      <template v-slot:header>
-          <view class="count-box">
+  <layout pageName='index'>
+    <view
+      class="modal"
+      v-if="loaded"
+    >
+      <!-- 数据初始化中... -->
+      <van-loading
+        type="spinner"
+        color="#1989fa"
+      >数据初始化中...</van-loading>
+    </view>
+    <template v-slot:header>
+      <view class="count-box">
         <view>结余：{{ countObj.inNumber - countObj.outNumber }}</view>
 
         <view class="bottom">
@@ -19,48 +19,33 @@
           <view>支出：{{ countObj.outNumber }}</view>
         </view>
       </view>
-      </template>
-      
-      <view class="my-list" >
-        <view
-          class="list-item"
-          v-for="item in flows.data"
-          :key="item.id"
-        >
-          <view class="left-box">
-            <!-- <view class="type-name">
-                      <bk-item :iconName="iconMap[item.categoryId].iconName"></bk-item>
-                      {{ iconMap[item.categoryId].typeName }}
-                  </view> -->
-            <view>{{ item.categoryName }}</view>
-            <view class="create-info">
-              <text class="user">{{ item.userName }}</text>
-              <text class="time">{{ item.showTime }}</text>
-            </view>
-          </view>
+    </template>
 
-          <view :class="item.categoryType === 2 ? 'in-number count-number' : 'out-number  count-number'">
-            {{ item.amount }}
-          </view>
-        </view>
+    <view class="my-list">
+      <FlowItem
+        v-for="item in flows.data"
+        :key="item.id"
+        :flow-data="item"
+        @update="getFlowData"
+      ></FlowItem>
 
-        <uni-load-more
-          :status="loadStatus"
-          :contentText="{
-            contentdown: '点击查看更多',
-            contentrefresh: '正在加载...',
-            contentnomore: '没有更多数据了'
-          }"
-          @clickLoadMore="getMoreData"
-          v-if="flows.data.length > 9"
-        ></uni-load-more>
-      </view>
-      <MoveableButton>
-        <view
-          @click="handleAdd"
-          class="add-icon"
-        >+</view>
-      </MoveableButton>
+      <uni-load-more
+        :status="loadStatus"
+        :contentText="{
+          contentdown: '点击查看更多',
+          contentrefresh: '正在加载...',
+          contentnomore: '没有更多数据了'
+        }"
+        @clickLoadMore="getMoreData"
+        v-if="flows.data.length > 9"
+      ></uni-load-more>
+    </view>
+    <MoveableButton>
+      <view
+        @click="handleAdd"
+        class="add-icon"
+      >+</view>
+    </MoveableButton>
   </layout>
 </template>
 <script lang='ts'>
@@ -75,6 +60,7 @@ import { wxLogin, signIn, signUp, signOut, delUser } from '@/api/user'
 
 import MoveableButton from '@/components/MoveableButton.vue'
 import Layout from '@/components/Layout.vue'
+import FlowItem from '@/components/FlowItem.vue'
 
 
 interface flowItem {
@@ -90,19 +76,21 @@ interface flowItem {
 }
 
 export default defineComponent({
-  components: { MoveableButton, Layout },
+  components: { MoveableButton, Layout, FlowItem },
   methods: {
     reloadData() {
-      this.page.currentPage = 1
       this.getBookAndFlowData()
     },
     reloadFlowData() {
-      this.page.currentPage = 1
       this.getFlowData()
     },
   },
   onShow() {
     console.log('on show ..')
+  },
+  onPullDownRefresh() {
+    
+    this.getFlowData()
   },
   setup() {
     let countObj = reactive({ inNumber: 0, outNumber: 0 }),
@@ -180,6 +168,9 @@ export default defineComponent({
     }
 
     function getFlowList(isMore?: boolean) {
+      if(!isMore){
+        page.currentPage = 1
+      }
       loadStatus.value = 'loading'
       // 分页查询
       getflows(Object.assign(
@@ -233,7 +224,8 @@ export default defineComponent({
       getBookAndFlowData,
       getFlowData,
       handleAdd,
-      getMoreData
+      getMoreData,
+      getFlowList
     }
   }
 }
@@ -255,14 +247,14 @@ export default defineComponent({
 }
 
 .count-box {
-  border-bottom: 3px dotted  #fff;
+  border-bottom: 3px dotted #fff;
   font-size: 16px;
   // height: 15vw;
   box-sizing: border-box;
   padding: 10px;
   margin-bottom: 5px;
 
-  view{
+  view {
     height: 50%;
   }
 
@@ -270,23 +262,6 @@ export default defineComponent({
     display: flex;
     // justify-content: space-around
   }
-}
-
-.my-list {
-  padding: 8px;
-  // height: 100%;
-  // overflow: auto;
-}
-
-.list-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 5px;
-  padding: 3px 0;
-  margin: 2px 0;
-
-  border-bottom: 1px dashed #fff;
 }
 
 .create-info {
@@ -298,14 +273,6 @@ export default defineComponent({
   // }
 }
 
-.in-number {
-  color: rgb(16, 119, 40)
-}
-
-.out-number {
-  color: rgb(255, 37, 37)
-}
-
 .add-icon {
   border: 1px solid #3cc51f;
   background: #3cc51f;
@@ -314,6 +281,9 @@ export default defineComponent({
   font-size: 26px;
   height: 10vw;
   width: 10vw;
-  text-align: center;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>

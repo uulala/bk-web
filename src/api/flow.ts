@@ -25,3 +25,12 @@ export function getflowTotal(params: Object) {
         params
     })
 }
+
+export function delFlow(data: Object) {
+    return http({
+        url: '/flow/del',
+        method: 'post',
+        data
+    })
+}
+
