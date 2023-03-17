@@ -1,74 +1,81 @@
 <template>
-  <view class="content">
-    <view
-      class="modal"
-      v-if="loaded"
-    >
-      <!-- 数据初始化中... -->
-      <van-loading
-        type="spinner"
-        color="#1989fa"
-      >数据初始化中...</van-loading>
-    </view>
-    <view class="count-box">
-      <view>收入：{{ countObj.inNumber }}</view>
-      <view>支出：{{ countObj.outNumber }}</view>
-      <view>结余：{{ countObj.inNumber - countObj.outNumber }}</view>
-    </view>
-    <view class="my-list">
+  <layout pageName='index' >
       <view
-        class="list-item"
-        v-for="item in flows.data"
-        :key="item.id"
+        class="modal"
+        v-if="loaded"
       >
-        <view class="left-box">
-          <!-- <view class="type-name">
+        <!-- 数据初始化中... -->
+        <van-loading
+          type="spinner"
+          color="#1989fa"
+        >数据初始化中...</van-loading>
+      </view>
+      <template v-slot:header>
+          <view class="count-box">
+        <view>结余：{{ countObj.inNumber - countObj.outNumber }}</view>
+
+        <view class="bottom">
+          <view style="margin-right: 15px"> 收入：{{ countObj.inNumber }}</view>
+          <view>支出：{{ countObj.outNumber }}</view>
+        </view>
+      </view>
+      </template>
+      
+      <view class="my-list" >
+        <view
+          class="list-item"
+          v-for="item in flows.data"
+          :key="item.id"
+        >
+          <view class="left-box">
+            <!-- <view class="type-name">
                       <bk-item :iconName="iconMap[item.categoryId].iconName"></bk-item>
                       {{ iconMap[item.categoryId].typeName }}
                   </view> -->
-          <view>{{ item.categoryName }}</view>
-          <view class="create-info">
-            <text class="user">{{ item.userName }}</text>
-            <text class="time">{{ item.showTime }}</text>
+            <view>{{ item.categoryName }}</view>
+            <view class="create-info">
+              <text class="user">{{ item.userName }}</text>
+              <text class="time">{{ item.showTime }}</text>
+            </view>
+          </view>
+
+          <view :class="item.categoryType === 2 ? 'in-number count-number' : 'out-number  count-number'">
+            {{ item.amount }}
           </view>
         </view>
 
-        <view :class="item.categoryType === 2 ? 'in-number count-number' : 'out-number  count-number'">
-          {{ item.amount }}
-        </view>
+        <uni-load-more
+          :status="loadStatus"
+          :contentText="{
+            contentdown: '点击查看更多',
+            contentrefresh: '正在加载...',
+            contentnomore: '没有更多数据了'
+          }"
+          @clickLoadMore="getMoreData"
+          v-if="flows.data.length > 9"
+        ></uni-load-more>
       </view>
-
-      <uni-load-more
-        :status="loadStatus"
-        :contentText="{
-          contentdown: '点击查看更多',
-          contentrefresh: '正在加载...',
-          contentnomore: '没有更多数据了'
-        }"
-        @clickLoadMore="getMoreData"
-        v-if="flows.data.length > 9"
-      ></uni-load-more>
-    </view>
-    <MoveableButton halfWidth="20">
-      <view
-        @click="handleAdd"
-        class="add-icon"
-      >+</view>
-    </MoveableButton>
-  </view>
+      <MoveableButton>
+        <view
+          @click="handleAdd"
+          class="add-icon"
+        >+</view>
+      </MoveableButton>
+  </layout>
 </template>
 <script lang='ts'>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, defineComponent } from 'vue'
 import { iconMap } from '@/static/commonMap'
-import MoveableButton from '@/components/MoveableButton.vue'
+
 import { getflows, getflowTotal } from '@/api/flow'
 import { getBookList, createBook, getCategoryList } from '@/api/book'
 
 import { ls } from '@/plugin/utils'
 import { wxLogin, signIn, signUp, signOut, delUser } from '@/api/user'
 
+import MoveableButton from '@/components/MoveableButton.vue'
+import Layout from '@/components/Layout.vue'
 
-import { defineComponent } from 'vue'
 
 interface flowItem {
   uid: Number
@@ -83,7 +90,7 @@ interface flowItem {
 }
 
 export default defineComponent({
-  components: { MoveableButton },
+  components: { MoveableButton, Layout },
   methods: {
     reloadData() {
       this.page.currentPage = 1
@@ -235,10 +242,6 @@ export default defineComponent({
 
 
 <style lang="scss" scoped>
-.content {
-  position: relative;
-}
-
 .modal {
   position: absolute;
   z-index: 10000;
@@ -252,20 +255,27 @@ export default defineComponent({
 }
 
 .count-box {
-  margin-bottom: 10px;
-  padding: 8px;
-  border-bottom: 1px solid #ccc;
-  background: rgb(69, 128, 88);
-  color: #fff;
-  display: flex;
-  justify-content: space-between;
+  border-bottom: 3px dotted  #fff;
+  font-size: 16px;
+  // height: 15vw;
+  box-sizing: border-box;
+  padding: 10px;
+  margin-bottom: 5px;
 
+  view{
+    height: 50%;
+  }
+
+  .bottom {
+    display: flex;
+    // justify-content: space-around
+  }
 }
 
 .my-list {
   padding: 8px;
-  height: calc(100vh - 10px - 10vh);
-  overflow: auto;
+  // height: 100%;
+  // overflow: auto;
 }
 
 .list-item {
@@ -276,16 +286,16 @@ export default defineComponent({
   padding: 3px 0;
   margin: 2px 0;
 
-  border-bottom: 1px dashed #ccc;
+  border-bottom: 1px dashed #fff;
 }
 
 .create-info {
-  color: #999;
+  color: #333;
 
-  .user {
-    margin-right: 5px;
-    color: #666;
-  }
+  // .user {
+  //   margin-right: 5px;
+  //   color: #666;
+  // }
 }
 
 .in-number {

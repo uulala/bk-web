@@ -10,10 +10,20 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 
-let top = ref('80vh'), left = ref('80vw')
-const props = defineProps({
-    halfWidth: String
+let top = ref(''), left = ref('')
+
+const props = withDefaults(defineProps<{
+    halfWidth: number
+    defaultTop: string
+    defaultLeft: string
+}>(), {
+    halfWidth: 20,
+    defaultTop: '80vh',
+    defaultLeft: '80vw'
 })
+
+top.value = props.defaultTop
+left.value = props.defaultLeft
 
 function handleTouch(ev) {
     const touch = ev.changedTouches[0]
