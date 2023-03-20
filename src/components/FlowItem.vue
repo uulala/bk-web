@@ -1,31 +1,25 @@
 <template>
-    <view
-        class="flow-item"
-        :style="{ transform: `translateX(${distance})` }"
-        @touchmove="handleMove"
-    >
-        <view class="box item-content">
-            <view>
-                <!-- <view class="type-name">
-                      <bk-flowData :iconName="iconMap[flowData.categoryId].iconName"></bk-flowData>
-                      {{ iconMap[flowData.categoryId].typeName }}
-                  </view> -->
-                <view>{{ flowData.categoryName }} {{ distance }}</view>
-                <view class="create-info">
-                    <text class="user">{{ flowData.userName }}</text>
-                    <text class="time">{{ flowData.showTime }}</text>
+    <view class="list-wrapper">
+        <view
+            class="item-wrapper"
+            v-for="(item, index) in listData"
+            :key="item.id"
+        >
+            <view
+                class="flow-item"
+                @touchstart="e => handleStart(e, index)"
+                @touchend="e => handleEnd(e, index)"
+                :style="`left: ${showBtn && index === currentIndex ? -btnWidth : 0}px`"
+            >
+                <view class="item-content">
+                    <slot :itemData="item"></slot>
                 </view>
-            </view>
-
-            <view :class="flowData.categoryType === 2 ? 'in-number count-number' : 'out-number  count-number'">
-                {{ flowData.amount }}
+                <view
+                    class="del-btn box-center"
+                    @click="handleDel"
+                >删除</view>
             </view>
         </view>
-        <view
-            class="del-btn box-center"
-            @click="handleDel"
-        >删除</view>
-
     </view>
 </template>
 
@@ -34,37 +28,39 @@ import { ref } from 'vue'
 import { delFlow } from '@/api/flow'
 
 const props = withDefaults(defineProps<{
-    flowData: object
+    listData: Array<object>
 }>(), {})
 
 const emits = defineEmits(['update'])
+const btnWidth = 80
 
-let distance = ref('0')
-
-let lastOne = 0
-
+let start = ref(0), end = ref(0), showBtn = ref(false), currentIndex = ref(undefined)
 
 function handleDel() {
     console.log(props.flowData)
     delFlow({ uuid: props.flowData.uuid }).then(res => {
+        showBtn.value = false
         emits('update')
     })
 }
 
-function handleMove(ev) {
-    const touch = ev.changedTouches[0]
-    const pagex = touch.pageX
+function handleStart(e, i) {
+    start.value = e.changedTouches[0].pageX
+}
 
-    if (lastOne > pagex && distance.value === '-50px' || (lastOne < pagex && distance.value === '0')) {
-        lastOne = pagex
-        return
+function handleEnd(e, i) {
+    end.value = e.changedTouches[0].pageX
+    if(showBtn.value && currentIndex.value !== i){
+        showBtn.value = false
+        return 
     }
     
-
-    distance.value = lastOne > pagex ? '-50px' : '0'
-
-    console.log('distance:',distance.value)
-    lastOne = pagex
+    currentIndex.value = i
+    if (start.value - end.value > btnWidth / 2) {
+        showBtn.value = true
+    } else if (end.value - start.value > btnWidth / 2) {
+        showBtn.value = false
+    }
 }
 </script>
 
@@ -80,16 +76,17 @@ function handleMove(ev) {
     justify-content: center;
 }
 
+.item-wrapper {
+    width: 100vw;
+    overflow: hidden;
+}
 
 .flow-item {
     position: relative;
     display: flex;
     margin-bottom: 5px;
     border-bottom: 1px dashed #fff;
-    overflow: auto;
-    &::-webkit-scrollbar { width: 0 !important }
-    -ms-overflow-style: none;
-    overflow: -moz-scrollbars-none;
+    // overflow: hidden;
 }
 
 .item-content {
@@ -99,18 +96,10 @@ function handleMove(ev) {
     box-sizing: border-box;
 }
 
-.in-number {
-    color: rgb(16, 119, 40)
-}
-
-.out-number {
-    color: rgb(255, 37, 37)
-}
-
 .del-btn {
     flex-shrink: 0;
     background: rgb(255, 37, 37);
-    width: 50px;
+    width: 80px;
     color: #fff;
 }
 </style>

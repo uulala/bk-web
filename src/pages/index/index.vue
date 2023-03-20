@@ -22,13 +22,27 @@
     </template>
 
     <view class="my-list">
-      <FlowItem
-        v-for="item in flows.data"
-        :key="item.id"
-        :flow-data="item"
-        @update="getFlowData"
-      ></FlowItem>
+      <FlowItem :listData="flows.data" >
+        <template v-slot="{ itemData }">
+          <view class="box">
+            <view>
+              <!-- <view class="type-name">
+                      <bk-itemData :iconName="iconMap[itemData.categoryId].iconName"></bk-itemData>
+                      {{ iconMap[itemData.categoryId].typeName }}
+                  </view> -->
+              <view>{{ itemData.categoryName }}</view>
+              <view class="create-info">
+                <text class="user">{{ itemData.userName }}</text>
+                <text class="time">{{ itemData.showTime }}</text>
+              </view>
+            </view>
 
+            <view :class="itemData.categoryType === 2 ? 'in-number count-number' : 'out-number  count-number'">
+              {{ itemData.amount }}
+            </view>
+          </view>
+        </template>
+      </FlowItem>
       <uni-load-more
         :status="loadStatus"
         :contentText="{
@@ -89,7 +103,7 @@ export default defineComponent({
     console.log('on show ..')
   },
   onPullDownRefresh() {
-    
+
     this.getFlowData()
   },
   setup() {
@@ -168,7 +182,7 @@ export default defineComponent({
     }
 
     function getFlowList(isMore?: boolean) {
-      if(!isMore){
+      if (!isMore) {
         page.currentPage = 1
       }
       loadStatus.value = 'loading'
@@ -234,6 +248,14 @@ export default defineComponent({
 
 
 <style lang="scss" scoped>
+.box,
+.box-center {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+
 .modal {
   position: absolute;
   z-index: 10000;
@@ -285,5 +307,14 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+
+.in-number {
+  color: rgb(16, 119, 40)
+}
+
+.out-number {
+  color: rgb(255, 37, 37)
 }
 </style>
