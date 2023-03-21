@@ -15,38 +15,49 @@
                 <slot name="header"></slot>
             </view>
             <view :style="{ height: `calc(100vh - 25vw - ${topPadding})`, overflow: 'auto' }">
-                <slot ></slot>
+                <slot></slot>
             </view>
-            
+
         </view>
     </view>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, reactive, watchEffect } from 'vue'
 import { ls } from '@/plugin/utils'
+import http from '@/api/http'
+
 
 const props = defineProps({
     pageName: String,
+    allBg: Array<Object>
 })
-let bgUrl = ref(ls.get('bgUrl') || '/static/img/bg/1.jpg'),
-    bgIndex = ref(1),
-    topPadding = ref('20px')
+let bgUrl = ref(ls.get('bgUrl')),
+    bgIndex = ref(0),
+    topPadding = ref('20px'),
+    realBgs = reactive({ data: {} })
 
-// bgUrl.value = ''
+const staticBgs = []
+for (let i = 1; i < 11; i++) {
+    staticBgs.push(`/static/img/bg/${i}.jpg`)
+}
 
-// switch (props.pageName) {
-//     case 'index':
-//         bgUrl.value = '/static/img/bg/2.jpg'
-// }
+watchEffect(() => {
+    const tempbgs = props.allBg.map(item => `${http.defaults.baseURL}/${item.url}`)
+    realBgs.data = [...tempbgs, ...staticBgs]
+    if (!bgUrl.value) {
+        bgUrl.value = realBgs.data[0]
+        ls.set('bgUrl', bgUrl.value)
+    }
+})
 
 function handleChangeBg() {
-    bgIndex.value += 1
-    if (bgIndex.value === 11) {
-        bgIndex.value = 1
+    bgIndex.value++
+    if (bgIndex.value > realBgs.data.length) {
+        bgIndex.value = 0
     }
 
-    bgUrl.value = `/static/img/bg/${bgIndex.value}.jpg`
+    bgUrl.value = realBgs.data[bgIndex.value]
     ls.set('bgUrl', bgUrl.value)
 }
 

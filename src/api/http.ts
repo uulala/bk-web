@@ -6,8 +6,8 @@ import { ls } from '@/plugin/utils'
 const http = axios
 
 // 请求base路径
-http.defaults.baseURL = "http://bk.uulala.top/"
-// http.defaults.baseURL = "http://127.0.0.1/"
+http.defaults.baseURL = "http://bk.uulala.top"
+// http.defaults.baseURL = "http://127.0.0.1"
 
 http.defaults.headers = {
     'content-Type': 'application/json'
@@ -49,7 +49,7 @@ http.interceptors.response.use(
     },
     function (error) {
         // 处理响应错误
-        if (error.response.status === 401) {
+        if (error.response && error.response.status === 401) {
             uni.navigateTo({
                 url: '/pages/index/index'
             })

@@ -1,5 +1,5 @@
 <template>
-  <layout pageName='index'>
+  <layout pageName='index' :allBg="allBg.data">
     <view
       class="modal"
       v-if="loaded"
@@ -22,7 +22,7 @@
     </template>
 
     <view class="my-list">
-      <FlowItem :listData="flows.data" >
+      <FlowItem :listData="flows.data">
         <template v-slot="{ itemData }">
           <view class="box">
             <view>
@@ -75,7 +75,7 @@ import { wxLogin, signIn, signUp, signOut, delUser } from '@/api/user'
 import MoveableButton from '@/components/MoveableButton.vue'
 import Layout from '@/components/Layout.vue'
 import FlowItem from '@/components/FlowItem.vue'
-
+import { getAvatarByType } from '@/api/upload'
 
 interface flowItem {
   uid: Number
@@ -112,7 +112,9 @@ export default defineComponent({
       flows: { data: flowItem[] } = reactive({ data: [] })
 
     let loadStatus = ref('more'),
-      loaded = ref(true)
+      loaded = ref(true),
+      allBg = reactive({ data: [] })
+
 
     onMounted(() => {
       // 默认尝试登录
@@ -123,6 +125,12 @@ export default defineComponent({
         } else {
           getBookAndFlowData()
         }
+
+        getAvatarByType('bg').then(res => {
+          console.log(res)
+          allBg.data = res.data
+          // bgUrl.value = allBg.data[0].url
+        })
       })
     })
 
@@ -239,7 +247,8 @@ export default defineComponent({
       getFlowData,
       handleAdd,
       getMoreData,
-      getFlowList
+      getFlowList,
+      allBg
     }
   }
 }

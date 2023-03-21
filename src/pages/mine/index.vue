@@ -1,18 +1,26 @@
 <template>
     <view class="content">
-        <view
-            class="user-box box"
-            v-if="!isEdit"
-        >
-            <image
-                class="avatar"
-                :src="realData.avatarUrl"
-                @click="isEdit = true"
-            ></image>
-            <text
-                class="nickname"
-                @click="isEdit = true"
-            >{{ realData.nickName || '微信用户' }}</text>
+        <view v-if="!isEdit">
+            <view class="user-box box">
+                <image
+                    class="avatar"
+                    :src="realData.avatarUrl"
+                    @click="isEdit = true"
+                ></image>
+                <text
+                    class="nickname"
+                    @click="isEdit = true"
+                >{{ realData.nickName || '微信用户' }}</text>
+
+
+
+            </view>
+            <view class="menu-list">
+                <view
+                    @click="handleUpload"
+                    class="menu-item"
+                >上传壁纸</view>
+            </view>
         </view>
         <view v-else>
             <button
@@ -49,6 +57,7 @@
 import { ls } from '@/plugin/utils';
 import { ref, reactive } from 'vue'
 import { updateUser } from '@/api/user'
+import { uploadFile } from '@/api/upload'
 const userinfo = ls.get('userinfo')
 
 let isEdit = ref(false)
@@ -74,6 +83,14 @@ function handleupdate() {
         isEdit.value = false
         realData.avatarUrl = avatarUrl
         realData.nickName = nickName
+    })
+}
+function handleUpload() {
+    console.log('upload')
+    uploadFile({
+        category: 'bg'
+    }, (url) => {
+        console.log(222, url)
     })
 }
 </script>
@@ -124,5 +141,17 @@ function handleupdate() {
     color: #3cc51f;
     border: 1px solid #3cc51f;
     margin: 10px 0;
+}
+
+.menu-list {
+    padding: 5px 10px;
+    margin: 10px;
+    border: 1px solid #eee;
+    border-radius: 5px;
+}
+
+.menu-item:not(:last-child) {
+    padding: 3px;
+    border-bottom: 1px dashed #eee;
 }
 </style>

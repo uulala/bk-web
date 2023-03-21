@@ -1,5 +1,8 @@
 <template>
     <view class="content">
+
+
+
         <view class="box tab-box">
             <view
                 v-for="item in dateType"
@@ -21,11 +24,22 @@
             @confirm="onConfirm"
         />
         <view class="time-row">时间范围：{{ showDate }}</view>
-        <view>
-            <view class="count-item  in-item"> 收入：{{ countObj.inNumber }}</view>
-            <view class="count-item  out-item"> 支出：{{ countObj.outNumber }}</view>
-            <view class="count-item "> 结余：{{ countObj.inNumber - countObj.outNumber }}</view>
+        <view class="model">
+            <!-- 数据初始化中... -->
+            <van-loading
+                type="spinner"
+                color="#1989fa"
+                class="loading-btn"
+                v-if="isLoading"
+            >数据更新中...</van-loading>
+
+            <view>
+                <view class="count-item  in-item"> 收入：{{ countObj.inNumber }}</view>
+                <view class="count-item  out-item"> 支出：{{ countObj.outNumber }}</view>
+                <view class="count-item "> 结余：{{ countObj.inNumber - countObj.outNumber }}</view>
+            </view>
         </view>
+
     </view>
 </template>
 
@@ -48,7 +62,7 @@ let categoryTypeList = reactive([
     ]),
     countObj = reactive({ inNumber: 0, outNumber: 0 })
 
-let activeType = ref('W'), show = ref(false)
+let activeType = ref('W'), show = ref(false), isLoading = ref(false)
 
 const timeRange = reactive({
     D: [ls.getStartTime('D'), ls.getEndTime('D')],
@@ -66,12 +80,19 @@ const showDate = computed(() => {
 
 function getFlowData() {
     console.log('getFlow', currentRange.data)
+    isLoading.value = true
     getflowTotal({
         bookId: ls.get('bookId'),
         startTime: currentRange.data[0],
         endTime: currentRange.data[1]
     }).then(res => {
+        isLoading.value = false
         console.log(res)
+        if (res.data.length === 0) {
+            countObj.outNumber = 0
+            countObj.inNumber = 0
+            return
+        }
         res.data.map(item => {
             if (item._id === 3) {
                 countObj.outNumber = item.totalAmount
@@ -79,6 +100,8 @@ function getFlowData() {
                 countObj.inNumber = item.totalAmount
             }
         })
+    }).catch(err => {
+        isLoading.value = false
     })
 }
 
@@ -153,5 +176,14 @@ function onConfirm(event) {
 
 .out-item {
     background: #ffb1ad;
+}
+
+.model{
+    position: relative;
+}
+.loading-btn{
+    position: absolute;
+    left: 30%;
+    top: 30%;
 }
 </style>
