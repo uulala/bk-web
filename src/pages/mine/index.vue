@@ -20,7 +20,16 @@
                     @click="handleUpload"
                     class="menu-item"
                 >上传壁纸</view>
+                <view
+                    @click="handleManageBg"
+                    class="menu-item"
+                >壁纸管理</view>
+                <!-- <view
+                    @click="handleManageBg"
+                    class="menu-item"
+                >意见反馈</view> -->
             </view>
+
         </view>
         <view v-else>
             <button
@@ -93,6 +102,10 @@ function handleUpload() {
         console.log(222, url)
     })
 }
+
+function handleManageBg() {
+    uni.navigateTo({ url: '/pages/manageBg/index' })
+}
 </script>
 
 <style lang="scss" scoped>
@@ -146,12 +159,16 @@ function handleUpload() {
 .menu-list {
     padding: 5px 10px;
     margin: 10px;
-    border: 1px solid #eee;
+    border: 1px solid #999;
     border-radius: 5px;
 }
 
+.menu-item {
+    padding: 5px;
+}
+
 .menu-item:not(:last-child) {
-    padding: 3px;
-    border-bottom: 1px dashed #eee;
+
+    border-bottom: 1px dashed #999;
 }
 </style>

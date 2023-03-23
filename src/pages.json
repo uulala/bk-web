@@ -42,6 +42,12 @@
 			"style": {
 				"navigationBarTitleText": "梦想记账本"
 			}
+		},
+		{
+			"path": "pages/manageBg/index",
+			"style": {
+				"navigationBarTitleText": "壁纸管理"
+			}
 		}
 	],
 	"tabBar": {

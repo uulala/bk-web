@@ -35,3 +35,11 @@ export function getAvatarByType(category: string) {
         params: { category }
     })
 }
+
+export function delImg(data: Object) {
+    return http({
+        url: '/upload/del',
+        method: 'post',
+        data
+    })
+}
