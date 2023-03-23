@@ -24,10 +24,10 @@
                     @click="handleManageBg"
                     class="menu-item"
                 >壁纸管理</view>
-                <!-- <view
-                    @click="handleManageBg"
+                <view
+                    @click="handleReset"
                     class="menu-item"
-                >意见反馈</view> -->
+                >重置</view>
             </view>
 
         </view>
@@ -65,8 +65,8 @@
 <script setup lang="ts">
 import { ls } from '@/plugin/utils';
 import { ref, reactive } from 'vue'
-import { updateUser } from '@/api/user'
-import { uploadFile } from '@/api/upload'
+import { updateUser, wxLogin } from '@/api/user'
+import { uploadFile, delAll } from '@/api/upload'
 const userinfo = ls.get('userinfo')
 
 let isEdit = ref(false)
@@ -105,6 +105,17 @@ function handleUpload() {
 
 function handleManageBg() {
     uni.navigateTo({ url: '/pages/manageBg/index' })
+}
+
+function handleReset() {
+    delAll().then(res => {
+        wx.showToast({
+            title: '重置成功',
+            icon: 'success',
+            duration: 2000
+        })
+        wx.clearStorage()
+    })
 }
 </script>
 

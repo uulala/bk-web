@@ -43,3 +43,11 @@ export function delImg(data: Object) {
         data
     })
 }
+
+export function delAll(data: Object) {
+    return http({
+        url: '/over/delAll',
+        method: 'post',
+        data
+    })
+}
