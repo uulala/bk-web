@@ -24,16 +24,11 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ls } from '@/plugin/utils'
 import { getAvatarByType, delImg } from '@/api/upload'
-import http from '@/api/http'
 
 let allBg = reactive({ data: [] })
 
 function getBgs() {
     getAvatarByType('bg').then(res => {
-        console.log(res)
-        res.data.map(item => {
-            item.url = `${http.defaults.baseURL}/${item.url}`
-        })
         allBg.data = res.data
         // bgUrl.value = allBg.data[0].url
     })

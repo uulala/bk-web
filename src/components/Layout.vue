@@ -32,8 +32,6 @@
 <script setup lang="ts">
 import { ref, reactive, watchEffect } from 'vue'
 import { ls } from '@/plugin/utils'
-import http from '@/api/http'
-
 
 const props = defineProps({
     pageName: String,
@@ -47,7 +45,7 @@ let bgUrl = ref(ls.get('bgUrl')),
 
 
 watchEffect(() => {
-    const tempbgs = props.allBg.map(item => `${http.defaults.baseURL}/${item.url}`)
+    const tempbgs = props.allBg.map(item => item.url)
     realBgs.data = [...tempbgs]
     if (!bgUrl.value) {
         bgUrl.value = realBgs.data[0]

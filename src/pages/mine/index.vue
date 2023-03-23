@@ -66,7 +66,9 @@
 import { ls } from '@/plugin/utils';
 import { ref, reactive } from 'vue'
 import { updateUser, wxLogin } from '@/api/user'
-import { uploadFile, delAll } from '@/api/upload'
+import { csUploadFile, delAll } from '@/api/upload'
+import http from '@/api/http'
+
 const userinfo = ls.get('userinfo')
 
 let isEdit = ref(false)
@@ -78,7 +80,17 @@ let formData = reactive({ avatarUrl, nickName }),
     realData = reactive({ avatarUrl, nickName })
 
 function onChooseAvatar(e) {
-    formData.avatarUrl = e.detail.avatarUrl
+
+    csUploadFile({
+        name: 'avatar',
+        category: 'avatar',
+        filePath: e.detail.avatarUrl
+    }, (url) => {
+        console.log('avatar url:', url)
+        formData.avatarUrl = url
+    })
+
+
 }
 
 function handleChangeName(e) {
@@ -87,7 +99,7 @@ function handleChangeName(e) {
 
 function handleupdate() {
     const { nickName, avatarUrl } = formData
-    updateUser({ _id: userinfo._id, name: nickName, avatar: avatarUrl }).then(res => {
+    updateUser({ uuid: userinfo.uuid, name: nickName, avatar: avatarUrl }).then(res => {
         ls.set(userinfo, res.data)
         isEdit.value = false
         realData.avatarUrl = avatarUrl
@@ -95,11 +107,16 @@ function handleupdate() {
     })
 }
 function handleUpload() {
-    console.log('upload')
-    uploadFile({
-        category: 'bg'
-    }, (url) => {
-        console.log(222, url)
+    wx.chooseImage({
+        success(res) {
+            csUploadFile({
+                name: 'bg',
+                category: 'bg',
+                filePath: res.tempFilePaths[0]
+            }, (url) => {
+                console.log('bg url:', url)
+            })
+        }
     })
 }
 
@@ -108,14 +125,26 @@ function handleManageBg() {
 }
 
 function handleReset() {
-    delAll().then(res => {
-        wx.showToast({
-            title: '重置成功',
-            icon: 'success',
-            duration: 2000
-        })
-        wx.clearStorage()
+    wx.showModal({
+        title: '警告',
+        content: '确认重置用户所有资料？',
+        success(res) {
+            if (res.confirm) {
+                delAll().then(res => {
+                    wx.showToast({
+                        title: '重置成功',
+                        icon: 'success',
+                        duration: 2000
+                    })
+                    wx.clearStorage()
+                })
+            } else if (res.cancel) {
+                console.log('用户点击取消')
+            }
+        }
     })
+
+
 }
 </script>
 
