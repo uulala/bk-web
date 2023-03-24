@@ -100,7 +100,7 @@ function handleChangeName(e) {
 function handleupdate() {
     const { nickName, avatarUrl } = formData
     updateUser({ uuid: userinfo.uuid, name: nickName, avatar: avatarUrl }).then(res => {
-        ls.set(userinfo, res.data)
+        ls.set('userinfo', res.data)
         isEdit.value = false
         realData.avatarUrl = avatarUrl
         realData.nickName = nickName

@@ -1,5 +1,13 @@
 import http from './http'
 
+export function getBookById(params: Object) {
+    return http({
+        url: '/book',
+        method: 'get',
+        params
+    })
+}
+
 // 获取 booklist
 export function getBookList(params: Object) {
     return http({

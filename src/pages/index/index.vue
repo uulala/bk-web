@@ -1,5 +1,8 @@
 <template>
-  <layout pageName='index' :allBg="allBg.data">
+  <layout
+    pageName='index'
+    :allBg="allBg.data"
+  >
     <view
       class="modal"
       v-if="loaded"
@@ -67,7 +70,7 @@ import { ref, reactive, onMounted, defineComponent } from 'vue'
 import { iconMap } from '@/static/commonMap'
 
 import { getflows, getflowTotal } from '@/api/flow'
-import { getBookList, createBook, getCategoryList } from '@/api/book'
+import { getBookList, getBookById, getCategoryList } from '@/api/book'
 
 import { ls } from '@/plugin/utils'
 import { wxLogin, signIn, signUp, signOut, delUser } from '@/api/user'
@@ -113,7 +116,8 @@ export default defineComponent({
 
     let loadStatus = ref('more'),
       loaded = ref(true),
-      allBg = reactive({ data: [] })
+      allBg = reactive({ data: [] }),
+      totalCount = ref(0)
 
 
     onMounted(() => {
@@ -136,31 +140,13 @@ export default defineComponent({
 
     // 获取用户账本
     function getBookAndFlowData() {
-      getBookList({}).then(res => {
-        const data = res.data
-        if (data[0]) {
-          // 已经有账本
-          const bkId = data[0].uuid
-          const currentBook = data[0]
-          ls.set('bookId', bkId)
-          ls.set('currentBook', currentBook)
-          ls.set('allBook', data)
-
-          getCategoryList(currentBook.categorys.join(',')).then(res => {
-            ls.set('categorys', res.data)
-            getFlowData()
-          })
-        } else {
-          // 没有账本，默认创建一个日常账本
-          getBookList({ isPublic: 1 }).then(res => {
-            const data = res.data
-            createBook({ publicBkUuid: data[0].uuid, name: '日常账本', img: 'https://up.enterdesk.com/edpic_source/b9/b7/be/b9b7bed24c1a05f4d197508204d0d043.jpg' }).then(res => {
-              if (res.code === 1) {
-                getBookAndFlowData()
-              }
-            })
-          })
-        }
+      getBookById({ isFirst: true }).then(res => {
+        console.log(res.data)
+        const { book, categoryTree } = res.data
+        ls.set('bookId', book.uuid)
+        ls.set('currentBook', book)
+        ls.set('categorys', categoryTree)
+        getFlowData()
       })
     }
 
@@ -202,6 +188,8 @@ export default defineComponent({
         page)).then(function (res) {
 
           const flowsData = res.data
+          totalCount.value = res.count
+
           const categorys = ls.get('categorys')
           flowsData.map(item => {
             item.showTime = ls.formatTime(parseInt(item.bizTime), 'YYYY-mm-dd HH:mm')
@@ -298,10 +286,10 @@ export default defineComponent({
 .create-info {
   color: #333;
 
-  // .user {
-  //   margin-right: 5px;
-  //   color: #666;
-  // }
+  .user {
+    margin-right: 5px;
+    // color: #666;
+  }
 }
 
 .add-icon {

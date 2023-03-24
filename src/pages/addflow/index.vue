@@ -245,10 +245,16 @@ function handleSave() {
 
 .category-box {
   padding-top: 5vw;
+  justify-content: flex-start
 }
 
 .category-item {
-  margin: 5px;
+  padding: 5px;
+  width: 25vw;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .active {
