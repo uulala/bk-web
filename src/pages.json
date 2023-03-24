@@ -9,7 +9,6 @@
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
 			"path": "pages/index/index",
-			
 			"style": {
 				"navigationBarTitleText": "梦想记账本",
 				"navigationStyle": "custom",
@@ -19,7 +18,6 @@
 		{
 			"path": "pages/chart/index",
 			"usingComponents": {
-				"ec-canvas": "/wxcomponents/ec-canvas/ec-canvas"
 			},
 			"style": {
 				"navigationBarTitleText": "梦想记账本"
@@ -83,23 +81,9 @@
 		"backgroundColor": "#F8F8F8",
 		"usingComponents": {
 			"van-datetime-picker": "/wxcomponents/vant-weapp/datetime-picker/index",
-			"van-button": "/wxcomponents/vant-weapp/button/index",
 			"van-image": "/wxcomponents/vant-weapp/image/index",
-			"van-count-down": "/wxcomponents/vant-weapp/count-down/index",
-			"van-icon": "/wxcomponents/vant-weapp/icon/index",
-			"van-area": "/wxcomponents/vant-weapp/area/index",
-			"van-picker": "/wxcomponents/vant-weapp/picker/index",
-			"van-tab": "/wxcomponents/vant-weapp/tab/index",
-			"van-tabs": "/wxcomponents/vant-weapp/tabs/index",
 			"van-popup": "/wxcomponents/vant-weapp/popup/index",
-			"van-dropdown-menu": "/wxcomponents/vant-weapp/dropdown-menu/index",
-			"van-dropdown-item": "/wxcomponents/vant-weapp/dropdown-item/index",
-			"van-submit-bar": "/wxcomponents/vant-weapp/submit-bar/index",
-			"van-dialog": "/wxcomponents/vant-weapp/dialog/index",
 			"van-loading": "/wxcomponents/vant-weapp/loading/index",
-			"van-search": "/wxcomponents/vant-weapp/search/index",
-			"van-progress": "/wxcomponents/vant-weapp/progress/index",
-			"van-slider": "/wxcomponents/vant-weapp/slider/index",
 			"van-field": "/wxcomponents/vant-weapp/field/index",
 			"van-cell": "/wxcomponents/vant-weapp/cell/index",
 			"van-calendar": "/wxcomponents/vant-weapp/calendar/index",

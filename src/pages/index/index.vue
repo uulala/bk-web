@@ -3,16 +3,6 @@
     pageName='index'
     :allBg="allBg.data"
   >
-    <view
-      class="modal"
-      v-if="loaded"
-    >
-      <!-- 数据初始化中... -->
-      <van-loading
-        type="spinner"
-        color="#1989fa"
-      >数据初始化中...</van-loading>
-    </view>
     <template v-slot:header>
       <view class="count-box">
         <view>结余：{{ countObj.inNumber - countObj.outNumber }}</view>
@@ -67,13 +57,11 @@
 </template>
 <script lang='ts'>
 import { ref, reactive, onMounted, defineComponent } from 'vue'
-import { iconMap } from '@/static/commonMap'
-
 import { getflows, getflowTotal } from '@/api/flow'
-import { getBookList, getBookById, getCategoryList } from '@/api/book'
+import { getBookById } from '@/api/book'
 
 import { ls } from '@/plugin/utils'
-import { wxLogin, signIn, signUp, signOut, delUser } from '@/api/user'
+import { wxLogin } from '@/api/user'
 
 import MoveableButton from '@/components/MoveableButton.vue'
 import Layout from '@/components/Layout.vue'
@@ -115,13 +103,16 @@ export default defineComponent({
       flows: { data: flowItem[] } = reactive({ data: [] })
 
     let loadStatus = ref('more'),
-      loaded = ref(true),
       allBg = reactive({ data: [] }),
       totalCount = ref(0)
 
 
     onMounted(() => {
       // 默认尝试登录
+      wx.showLoading({
+        title: '加载中',
+        mask: true
+      })
       wxLogin((result) => {
         // 默认有bookId, 则有其他相关的book数据
         if (ls.get('bookId')) {
@@ -131,7 +122,6 @@ export default defineComponent({
         }
 
         getAvatarByType('bg').then(res => {
-          console.log(res)
           allBg.data = res.data
           // bgUrl.value = allBg.data[0].url
         })
@@ -141,7 +131,6 @@ export default defineComponent({
     // 获取用户账本
     function getBookAndFlowData() {
       getBookById({ isFirst: true }).then(res => {
-        console.log(res.data)
         const { book, categoryTree } = res.data
         ls.set('bookId', book.uuid)
         ls.set('currentBook', book)
@@ -151,7 +140,6 @@ export default defineComponent({
     }
 
     function getFlowData() {
-      console.log('getFlowData')
       getTotalData()
       getFlowList()
     }
@@ -162,8 +150,7 @@ export default defineComponent({
         startTime: ls.getStartTime('M'),
         endTime: ls.getTime()
       }).then(res => {
-        loaded.value = false
-        console.log(res)
+        wx.hideLoading()
         res.data.map(item => {
           if (item._id === 3) {
             countObj.outNumber = item.totalAmount
@@ -186,7 +173,6 @@ export default defineComponent({
           bookId: ls.get('bookId'),
         },
         page)).then(function (res) {
-
           const flowsData = res.data
           totalCount.value = res.count
 
@@ -214,7 +200,6 @@ export default defineComponent({
         url: '/pages/addflow/index',
         events: {
           refreshData(data) {
-            console.log(data)
           }
         },
       })
@@ -230,7 +215,6 @@ export default defineComponent({
       page,
       flows,
       loadStatus,
-      loaded,
       getBookAndFlowData,
       getFlowData,
       handleAdd,

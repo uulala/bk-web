@@ -98,8 +98,13 @@ function handleChangeName(e) {
 }
 
 function handleupdate() {
+    wx.showLoading({
+        title: '保存中',
+        mask: true
+    })
     const { nickName, avatarUrl } = formData
     updateUser({ uuid: userinfo.uuid, name: nickName, avatar: avatarUrl }).then(res => {
+        wx.hideLoading()
         ls.set('userinfo', res.data)
         isEdit.value = false
         realData.avatarUrl = avatarUrl

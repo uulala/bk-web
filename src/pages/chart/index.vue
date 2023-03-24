@@ -40,13 +40,19 @@
             </view>
         </view>
 
+        <chartItem
+            chartId="chart1"
+            :opt="lineOpt"
+        ></chartItem>
+
     </view>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { ls } from '@/plugin/utils'
 import { getflows, getflowTotal } from '@/api/flow'
+import chartItem from '@/components/chartItem.vue';
 
 let categoryTypeList = reactive([
     { value: 2, lable: '收入' },
@@ -70,7 +76,25 @@ const timeRange = reactive({
     M: [ls.getStartTime('M'), ls.getEndTime('M')],
     Y: [ls.getStartTime('Y'), ls.getEndTime('Y')],
 })
-let currentRange = reactive({ data: [] })
+let currentRange = reactive({ data: [] }),
+    lineOpt: { series: Array<{ name: string, data: Array<number> }> } = reactive({
+        categories: ["2016", "2017", "2018", "2019", "2020", "2021"],
+        series: [],
+        type: "column",
+        xAxis: {
+            disableGrid: true
+        },
+        yAxis: {
+            data: [
+                {
+                    min: 0
+                }
+            ]
+        }
+    })
+
+onMounted(() => {
+})
 
 currentRange.data = timeRange[activeType.value]
 
@@ -88,6 +112,17 @@ function getFlowData() {
     }).then(res => {
         isLoading.value = false
         console.log(res)
+        lineOpt.series = [
+            {
+                name: "目标值",
+                data: [35, 36, 31, 33, 13, 34]
+            },
+            {
+                name: "完成量",
+                data: [18, 27, 21, 24, 6, 28]
+            }
+        ]
+
         if (res.data.length === 0) {
             countObj.outNumber = 0
             countObj.inNumber = 0
@@ -100,6 +135,9 @@ function getFlowData() {
                 countObj.inNumber = item.totalAmount
             }
         })
+
+
+
     }).catch(err => {
         isLoading.value = false
     })
@@ -161,27 +199,28 @@ function onConfirm(event) {
 }
 
 .count-item {
-    height: 10vh;
     font-size: 16px;
     font-weight: 500;
-    background: #a6e4ff;
+    // background: #a6e4ff;
     display: flex;
     align-items: center;
     justify-content: flex-start;
+    padding: 5px;
 }
 
 .in-item {
-    background: #b9fab6;
+    // background: #b9fab6;
 }
 
 .out-item {
-    background: #ffb1ad;
+    // background: #ffb1ad;
 }
 
-.model{
+.model {
     position: relative;
 }
-.loading-btn{
+
+.loading-btn {
     position: absolute;
     left: 30%;
     top: 30%;

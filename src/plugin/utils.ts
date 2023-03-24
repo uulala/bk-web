@@ -56,7 +56,6 @@ const ls = {
 
                 break
         }
-        console.log('xxx:', ls.getTimePart(tempTime))
         return tempTime
     },
     getEndTime(type: string, d?: any) {
@@ -77,7 +76,6 @@ const ls = {
                 tempTime = new Date(`${Y}-${M}-${D} 00:00:00`).getTime() + s * 24 * 60 * 60 * 1000
                 break
         }
-        console.log('xxx:', ls.getTimePart(tempTime))
         return tempTime
     },
     getTimePart(d: any) {
