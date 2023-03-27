@@ -87,9 +87,7 @@
 			"van-field": "/wxcomponents/vant-weapp/field/index",
 			"van-cell": "/wxcomponents/vant-weapp/cell/index",
 			"van-calendar": "/wxcomponents/vant-weapp/calendar/index",
-			"van-toast": "/wxcomponents/vant-weapp/toast/index",
-			"van-tab": "/wxcomponents/vant-weapp/tab/index",
-			"van-tabs": "/wxcomponents/vant-weapp/tabs/index"
+			"van-toast": "/wxcomponents/vant-weapp/toast/index"
 		}
 	}
 }
