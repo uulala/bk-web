@@ -38,12 +38,14 @@ onMounted(() => {
 
 
 watch(() => props.opt, (newValue, oldValue) => {
+    console.log('newValue:',newValue)
     drawCharts(props.chartId, JSON.parse(JSON.stringify(newValue)));
 }, { deep: true })
 
 const instance = getCurrentInstance()
 
 function drawCharts(id, opt) {
+    console.log('draw',opt.series)
     const query = uni.createSelectorQuery().in(instance)
     query.select('#' + id).fields({ node: true, size: true }).exec(res => {
         console.log('res:', res)
@@ -53,22 +55,8 @@ function drawCharts(id, opt) {
             canvas.width = res[0].width * pixelRatio.value;
             canvas.height = res[0].height * pixelRatio.value;
             uChartsInstance[id] = new uCharts({
-                animation: true,
-                background: "#FFFFFF",
-                canvas2d: true,
-                color: ["#1890FF", "#91CB74", "#FAC858", "#EE6666", "#73C0DE", "#3CA272", "#FC8452", "#9A60B4", "#ea7ccc"],
                 context: ctx,
-                extra: {
-                    column: {
-                        type: "group",
-                        width: 30,
-                        activeBgColor: "#000000",
-                        activeBgOpacity: 0.08
-                    }
-                },
                 height: cHeight.value * pixelRatio.value,
-                legend: {},
-                padding: [15, 15, 0, 5],
                 pixelRatio: pixelRatio.value,
                 width: cWidth.value * pixelRatio.value,
                 ...opt

@@ -151,7 +151,9 @@ export default defineComponent({
         endTime: ls.getTime()
       }).then(res => {
         wx.hideLoading()
-        res.data.map(item => {
+        const { all, categorys } = res.data
+
+        all.map(item => {
           if (item._id === 3) {
             countObj.outNumber = item.totalAmount
           } else if (item._id === 2) {
@@ -179,7 +181,7 @@ export default defineComponent({
           const categorys = ls.get('categorys')
           flowsData.map(item => {
             item.showTime = ls.formatTime(parseInt(item.bizTime), 'YYYY-mm-dd HH:mm')
-            item.categoryName = categorys.find(it => it.uuid === item.categoryId).name
+            item.categoryName = ls.getOneLabel(categorys, item,'categoryId' )
           })
           if (isMore) {
             if (flowsData.length === 0) {

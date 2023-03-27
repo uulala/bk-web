@@ -110,6 +110,16 @@ const ls = {
 
         }
         return temp
+    },
+    getLabel(dic, arr, keyName = 'uuid', labelName) {
+        labelName = labelName || `${keyName}_Name`
+        arr.map(item => {
+            item[labelName] = dic.find(it => it.uuid === item[keyName]
+            ).name
+        })
+    },
+    getOneLabel(dic, item, keyName) {
+        return dic.find(it => it.uuid === item[keyName]).name
     }
 }
 
