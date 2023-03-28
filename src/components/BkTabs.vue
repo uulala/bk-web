@@ -8,6 +8,9 @@
                 @click="() => handleChange(item)"
             >{{ item.label }}</view>
         </view>
+        <view>
+            <slot name="default"></slot>
+        </view>
 
         <view
             v-for="item in realData"
@@ -32,7 +35,7 @@ let active = ref(props.tabData[0].value),
     realData = reactive(props.tabData)
 
 function handleChange(item) {
-    emits('change', item)
+    emits('change', item.value)
     active.value = item.value
 
 

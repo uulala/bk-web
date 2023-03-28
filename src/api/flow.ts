@@ -34,3 +34,11 @@ export function delFlow(data: Object) {
     })
 }
 
+export function getflowTrand(params: Object) {
+    return http({
+        url: '/flow/trand',
+        method: 'get',
+        params
+    })
+}
+

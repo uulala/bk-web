@@ -26,7 +26,8 @@ let cWidth = ref(750),
     cHeight = ref(500),
     pixelRatio = ref(2),
     wrapper = ref(null),
-    uChartsInstance = reactive({})
+    uChartsInstance = reactive({}),
+    instance = reactive({})
 
 onMounted(() => {
     //这里的第一个 750 对应 css .charts 的 width
@@ -38,18 +39,19 @@ onMounted(() => {
 
 
 watch(() => props.opt, (newValue, oldValue) => {
-    console.log('newValue:',newValue)
+    console.log('newValue:', newValue)
     drawCharts(props.chartId, JSON.parse(JSON.stringify(newValue)));
 }, { deep: true })
 
-const instance = getCurrentInstance()
+onMounted(()=>{
+    instance = getCurrentInstance()
+})
 
 function drawCharts(id, opt) {
-    console.log('draw',opt.series)
     const query = uni.createSelectorQuery().in(instance)
     query.select('#' + id).fields({ node: true, size: true }).exec(res => {
-        console.log('res:', res)
         if (res[0]) {
+            console.log('draw2', id, res[0])
             const canvas = res[0].node;
             const ctx = canvas.getContext('2d');
             canvas.width = res[0].width * pixelRatio.value;
@@ -59,6 +61,10 @@ function drawCharts(id, opt) {
                 height: cHeight.value * pixelRatio.value,
                 pixelRatio: pixelRatio.value,
                 width: cWidth.value * pixelRatio.value,
+                animation: true,
+                background: "#FFFFFF",
+                color: ["#1890FF", "#91CB74", "#FAC858", "#EE6666", "#73C0DE", "#3CA272", "#FC8452", "#9A60B4", "#ea7ccc"],
+                padding: [15, 10, 0, 15],
                 ...opt
             });
         } else {

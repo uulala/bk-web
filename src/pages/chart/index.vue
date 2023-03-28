@@ -1,30 +1,28 @@
 <template>
     <view class="content">
-        <BkTabs :tabData="tabData">
-            <template #a>
-                <ByCategory></ByCategory>
-            </template>
-            <template #b>
-                <ByTrand></ByTrand>
-            </template>
-        </BkTabs>
+        <SearchForm @query="handleQueryChange"></SearchForm>
+        <ByCategory :params="params"></ByCategory>
+        <ByTrand :params="params"></ByTrand>
     </view>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue'
-import BkTabs from '@/components/BkTabs.vue';
+import SearchForm from './components/SearchForm.vue';
 import ByCategory from './components/ByCategory.vue';
 import ByTrand from './components/ByTrand.vue';
 
-let tabData = reactive([
-    {
-        value: 'a', label: '类别'
-    },
-    {
-        value: 'b', label: '趋势'
-    },
-])
+let params = reactive({ range: [], categoryType: 3 })
+
+function handleQueryChange(p) {
+    console.log('query', p)
+    const { range, categoryType } = p
+    if (categoryType) {
+        params.categoryType = p.categoryType
+    } else {
+        params.range = p.range
+    }
+}
 
 </script>
 
