@@ -50,10 +50,10 @@ watch(() => props.params.range, (newValue, oldValue) => {
     getTrandData()
 }, { deep: true })
 
-watch(() => props.params.categoryType, (newValue, oldValue) => {
-    console.log('categoryy watch2:', newValue)
-    changeSource(newValue)
-}, { deep: true })
+// watch(() => props.params.categoryType, (newValue, oldValue) => {
+//     console.log('categoryy watch2:', newValue)
+//     // changeSource(newValue)
+// }, { deep: true })
 
 
 function getTrandData() {
